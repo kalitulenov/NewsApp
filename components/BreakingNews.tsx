@@ -9,6 +9,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
+import Pagination from "./Pagination";
 
 type Props = {
   newsList: Array<NewsDataType>;
@@ -47,7 +48,9 @@ const BreakingNews = ({ newsList }: Props) => {
           pagingEnabled
           onScroll={onScrollHandler}
           scrollEventThrottle={16}
+          onEndReachedThreshold={0.5}
         />
+        <Pagination />
       </View>
     </View>
   );

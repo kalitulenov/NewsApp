@@ -1,7 +1,7 @@
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NewsDataType } from "@/types";
-import { SharedValue } from "react-native-reanimated";
+import { SharedValue, useAnimatedStyle } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 
@@ -17,6 +17,19 @@ const { width } = Dimensions.get("screen");
 
 const SliderItem = ({ slideItem, index, scrollX }: Props) => {
   // console.log("index:");
+  // const rnStyle = useAnimatedStyle(()=>{
+  //    return{
+  //     transform: [
+  //       {
+  //         translateX: interpolate (
+  //           scrollX.value,
+
+  //         )
+  //       }
+
+  //     ]
+  //    }
+  // });
 
   return (
     <View style={styles.itemWrapper} key={slideItem.article_id}>
@@ -77,7 +90,7 @@ const styles = StyleSheet.create({
     top: 85,
     paddingHorizontal: 20,
     alignItems: "center",
-    gap: 10,
+    gap: 5,
   },
   sourceName: {
     color: Colors.white,
