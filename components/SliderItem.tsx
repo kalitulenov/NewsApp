@@ -1,9 +1,17 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { NewsDataType } from "@/types";
 import { SharedValue, useAnimatedStyle } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
+import { Link } from "expo-router";
 
 console.log("SliderItem:");
 
@@ -16,42 +24,31 @@ type Props = {
 const { width } = Dimensions.get("screen");
 
 const SliderItem = ({ slideItem, index, scrollX }: Props) => {
-  // console.log("index:");
-  // const rnStyle = useAnimatedStyle(()=>{
-  //    return{
-  //     transform: [
-  //       {
-  //         translateX: interpolate (
-  //           scrollX.value,
-
-  //         )
-  //       }
-
-  //     ]
-  //    }
-  // });
-
   return (
-    <View style={styles.itemWrapper} key={slideItem.article_id}>
-      <Image source={{ uri: slideItem.image_url }} style={styles.image} />
-      <LinearGradient
-        colors={["transparent", "rgba(0,0,0,0.8)"]}
-        style={styles.background}
-      >
-        <View style={styles.sourceInfo}>
-          {slideItem.source_icon && (
-            <Image
-              source={{ uri: slideItem.source_icon }}
-              style={styles.sourceIcon}
-            />
-          )}
-          <Text style={styles.sourceName}>{slideItem.source_name}</Text>
+    <Link href={`/news/${slideItem.article_id}`} asChild>
+      <TouchableOpacity>
+        <View style={styles.itemWrapper} key={slideItem.article_id}>
+          <Image source={{ uri: slideItem.image_url }} style={styles.image} />
+          <LinearGradient
+            colors={["transparent", "rgba(0,0,0,0.8)"]}
+            style={styles.background}
+          >
+            <View style={styles.sourceInfo}>
+              {slideItem.source_icon && (
+                <Image
+                  source={{ uri: slideItem.source_icon }}
+                  style={styles.sourceIcon}
+                />
+              )}
+              <Text style={styles.sourceName}>{slideItem.source_name}</Text>
+            </View>
+            <Text style={styles.title} numberOfLines={2}>
+              {slideItem.title}
+            </Text>
+          </LinearGradient>
         </View>
-        <Text style={styles.title} numberOfLines={2}>
-          {slideItem.title}
-        </Text>
-      </LinearGradient>
-    </View>
+      </TouchableOpacity>
+    </Link>
   );
 };
 
@@ -65,6 +62,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
+    //height: "20%", // задать конкретную высоту
+    // width: "100%", // уменьшить ширину
     width: width - 60,
     height: 180,
     borderRadius: 20,

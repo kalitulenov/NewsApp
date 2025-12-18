@@ -29,16 +29,16 @@ export default SearchBar;
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 20,
-    marginBottom: 20,
+    marginHorizontal: 5,
+    marginBottom: 0,
   },
   searchBar: {
     backgroundColor: "#E4E4E4",
     paddingHorizontal: 10,
-    paddingVertical: 12,
+    paddingVertical: 0,
     borderRadius: 10,
     flexDirection: "row",
-    gap: 10,
+    gap: 5,
   },
   searchTxt: {
     fontSize: 14,

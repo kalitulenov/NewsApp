@@ -50,7 +50,7 @@ const BreakingNews = ({ newsList }: Props) => {
           scrollEventThrottle={16}
           onEndReachedThreshold={0.5}
         />
-        <Pagination />
+        {/* <Pagination /> */}
       </View>
     </View>
   );
@@ -60,13 +60,18 @@ export default BreakingNews;
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 10,
+    marginBottom: 40,
+    marginTop: -40,
+    //height: "20%", // задать конкретную высоту
+    // width: "100%", // уменьшить ширину
+    // height: 50,
+    // width: 100,
   },
   title: {
     fontSize: 18,
     fontWeight: "600",
     color: Colors.black,
-    marginBottom: 10,
+    marginBottom: 5,
     marginLeft: 20,
   },
   slideWrapper: {

@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,9 +23,23 @@ const Catgories = ({ onCategoryChanged }: Props) => {
     const selected = itemRef.current[index];
     setActiveIndex(index);
 
-    selected?.measure((x) => {
-      //   console.log("x:", x);
-      scrollRef.current?.scrollTo({ x: x - 20, y: 0, animated: true });
+    // selected?.measure((x) => {
+    //   //   console.log("x:", x);
+    //   scrollRef.current?.scrollTo({
+    //     x: x - 20,
+    //     animated: true,
+    //   });
+    // });
+
+    selected?.measure((x, y, width, height, pageX) => {
+      // Вычисляем смещение так, чтобы элемент был по центру экрана
+      const screenWidth = Dimensions.get("window").width;
+      const scrollToX = x - screenWidth / 2 + width / 2;
+
+      scrollRef.current?.scrollTo({
+        x: Math.max(0, scrollToX),
+        animated: true,
+      });
     });
 
     onCategoryChanged(newsCategoryList[index].slug);
@@ -70,6 +85,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
     marginBottom: 10,
     marginLeft: 20,
+    marginTop: -20,
   },
   itemsWrapper: {
     gap: 10,

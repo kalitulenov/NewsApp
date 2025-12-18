@@ -17,7 +17,7 @@ const Loading = (
   return (
     <View style={styles.container}>
       <ActivityIndicator {...props}></ActivityIndicator>
-      <Text>Loading</Text>
+      {/* <Text>Loading</Text> */}
     </View>
   );
 };

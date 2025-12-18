@@ -19,9 +19,23 @@ const Page = (props: Props) => {
   const [news, setNews] = useState<NewsDataType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // useEffect(() => {
+  //   getBreakingNews();
+  //   getNews();
+  // }, []);
+
   useEffect(() => {
-    getBreakingNews();
-    getNews();
+    const load = async () => {
+      try {
+        getBreakingNews();
+        getNews();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsLoading(false); // ← ОБЯЗАТЕЛЬНО
+      }
+    };
+    load();
   }, []);
 
   const getBreakingNews = async () => {
@@ -46,16 +60,20 @@ const Page = (props: Props) => {
   };
   const onCatChanged = (category: string) => {
     console.log("Category: ", category);
+    setNews([]);
+    getNews(category);
   };
 
-  const getNews = async () => {
+  const getNews = async (category: string = "") => {
     try {
+      let categoryString = "";
+      if (category.length !== 0) {
+        categoryString = `&category=${category}`;
+      }
+      // console.log("categoryString: ", categoryString);
       // Expo web not replacing process.env variables
-      // const URL =
-      //   "https://newsdata.io/api/1/latest?apikey=${process.env.EXPO_PUBLIC_API_KEY}";
-      const URL =
-        "https://newsdata.io/api/1/latest?apikey=pub_d04c7afa300b4847835de372229e59de&size=10";
-
+      const URL = `https://newsdata.io/api/1/latest?apikey=pub_d04c7afa300b4847835de372229e59de&size=10${categoryString}`;
+      //    console.log("URL: ", URL);
       const response = await axios.get(URL);
 
       if (response && response.data) {
@@ -71,12 +89,13 @@ const Page = (props: Props) => {
       <Header />
       <SearchBar />
       {isLoading ? (
-        // <ActivityIndicator size={"large"} />
-        <Loading size="small"></Loading>
+        <Loading size={"large"} />
       ) : (
+        // <ActivityIndicator size={"large"} />
+        //<Loading size="large"></Loading>
         <BreakingNews newsList={breakingNews} />
       )}
-      <BreakingNews newsList={breakingNews} />
+      {/* // <BreakingNews newsList={breakingNews} /> */}
       <Catgories onCategoryChanged={onCatChanged} />
       {/* {breakingNews.map((item, index) => (
         <Text>{item.title}</Text>
