@@ -19,24 +19,24 @@ const Page = (props: Props) => {
   const [news, setNews] = useState<NewsDataType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   getBreakingNews();
-  //   getNews();
-  // }, []);
-
   useEffect(() => {
-    const load = async () => {
-      try {
-        getBreakingNews();
-        getNews();
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false); // ← ОБЯЗАТЕЛЬНО
-      }
-    };
-    load();
+    getBreakingNews();
+    getNews();
   }, []);
+
+  // useEffect(() => {
+  //   const load = async () => {
+  //     try {
+  //       getBreakingNews();
+  //       getNews();
+  //     } catch (e) {
+  //       console.log(e);
+  //     } finally {
+  //       setIsLoading(false); // ← ОБЯЗАТЕЛЬНО
+  //     }
+  //   };
+  //   load();
+  // }, []);
 
   const getBreakingNews = async () => {
     try {
@@ -78,6 +78,7 @@ const Page = (props: Props) => {
 
       if (response && response.data) {
         setNews(response.data.results);
+        setIsLoading(false);
       }
     } catch (error: any) {
       console.log("Error message: ", error.message);
