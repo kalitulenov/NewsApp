@@ -1,8 +1,16 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 import { NewsDataType } from "@/types";
 import { Colors } from "@/constants/Colors";
 import Loading from "./Loading";
+import { Link } from "expo-router";
 
 type Props = {
   newsList: NewsDataType[];
@@ -15,20 +23,29 @@ const NewsList = ({ newsList }: Props) => {
         <Loading size={"large"} />
       ) : (
         newsList.map((item, index) => (
-          <View key={index} style={styles.itemContainer}>
-            <Image source={{ uri: item.image_url }} style={styles.itemImg} />
-            <View style={styles.itemInfo}>
-              <Text style={styles.itemCategory}>{item.category}</Text>
-              <Text style={styles.itemTitle}>{item.title}</Text>
-              <View style={styles.itemSourceInfo}>
+          <Link href={`/news/${item.article_id}`} asChild key={index}>
+            <TouchableOpacity>
+              <View style={styles.itemContainer}>
                 <Image
-                  source={{ uri: item.source_icon }}
-                  style={styles.itemSourceImg}
+                  source={{ uri: item.image_url }}
+                  style={styles.itemImg}
                 />
-                <Text style={styles.itemSourceName}>{item.source_name}</Text>
+                <View style={styles.itemInfo}>
+                  <Text style={styles.itemCategory}>{item.category}</Text>
+                  <Text style={styles.itemTitle}>{item.title}</Text>
+                  <View style={styles.itemSourceInfo}>
+                    <Image
+                      source={{ uri: item.source_icon }}
+                      style={styles.itemSourceImg}
+                    />
+                    <Text style={styles.itemSourceName}>
+                      {item.source_name}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
+            </TouchableOpacity>
+          </Link>
         ))
       )}
     </ScrollView>

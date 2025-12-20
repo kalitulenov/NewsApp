@@ -1,4 +1,5 @@
 import {
+  Animated,
   Dimensions,
   Image,
   StyleSheet,
@@ -27,7 +28,7 @@ const SliderItem = ({ slideItem, index, scrollX }: Props) => {
   return (
     <Link href={`/news/${slideItem.article_id}`} asChild>
       <TouchableOpacity>
-        <View style={styles.itemWrapper} key={slideItem.article_id}>
+        <Animated.View style={styles.itemWrapper} key={slideItem.article_id}>
           <Image source={{ uri: slideItem.image_url }} style={styles.image} />
           <LinearGradient
             colors={["transparent", "rgba(0,0,0,0.8)"]}
@@ -46,7 +47,7 @@ const SliderItem = ({ slideItem, index, scrollX }: Props) => {
               {slideItem.title}
             </Text>
           </LinearGradient>
-        </View>
+        </Animated.View>
       </TouchableOpacity>
     </Link>
   );

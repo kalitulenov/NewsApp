@@ -61,7 +61,7 @@ export default BreakingNews;
 const styles = StyleSheet.create({
   container: {
     marginBottom: 40,
-    marginTop: -40,
+    marginTop: -10,
   },
   title: {
     fontSize: 18,
