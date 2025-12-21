@@ -2,6 +2,13 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Colors } from "@/constants/Colors";
 import { AntDesign } from "@expo/vector-icons";
+import {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 
 type Props = {
   label: string;
@@ -10,13 +17,41 @@ type Props = {
 };
 
 const CheckBox = ({ label, checked, onPress }: Props) => {
+  const rnAnimatedContainerStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: withTiming(
+        checked ? "rgba(239,142,82,0.1)" : "transparent",
+        { duration: 150 }
+      ),
+      borderColor: withTiming(checked ? Colors.tint : Colors.black, {
+        duration: 150,
+      }),
+      paddingLeft: 16,
+      paddingRight: checked ? 10 : 16,
+    };
+  }, [checked]);
+
+  const rnTextStyle = useAnimatedStyle(() => {
+    return {
+      color: withTiming(checked ? Colors.tint : Colors.black, {
+        duration: 150,
+      }),
+    };
+  }, [checked]);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={styles.iconWrapper}>
-        <AntDesign name="checkcircle" size={14} color={Colors.tint} />
-      </View>
-    </View>
+    <Animated.View style={[styles.container, rnAnimatedContainerStyle]}>
+      <Animated.Text style={[styles.label, rnTextStyle]}>{label}</Animated.Text>
+      {checked && (
+        <Animated.View
+          style={styles.iconWrapper}
+          entering={FadeIn.duration(350)}
+          exiting={FadeOut}
+        >
+          <AntDesign name="checkcircle" size={14} color={Colors.tint} />
+        </Animated.View>
+      )}
+    </Animated.View>
   );
 };
 

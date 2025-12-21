@@ -3,25 +3,33 @@ import React from "react";
 import SearchBar from "@/components/SearchBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import newsCategoryList from "@/constants/Categories";
+// import newsCategoryList from "@/constants/Categories";
 import CheckBox from "@/components/CheckBox";
+import { useNewsCategories } from "@/hooks/useNewsCategories";
 
 type Props = {};
 
 const Page = (props: Props) => {
   const { top: safeTop } = useSafeAreaInsets();
 
+  const { newsCategories, toggleNewsCategory } = useNewsCategories();
+
+  console.log("newsCategories:", newsCategories);
+  console.log("toggleNewsCategory:", toggleNewsCategory);
+
   return (
     <View style={[styles.container, { paddingTop: safeTop + 20 }]}>
       <SearchBar withHorizontalPadding={false} />
       <Text style={styles.title}>Categories</Text>
       <View style={styles.listContainer}>
-        {newsCategoryList.map((item) => (
+        {newsCategories.map((item) => (
           <CheckBox
             key={item.id}
             label={item.title}
             checked={item.selected}
-            onPress={() => {}}
+            onPress={() => {
+              toggleNewsCategory(item.id);
+            }}
           />
         ))}
       </View>
