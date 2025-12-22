@@ -5,6 +5,7 @@ import { AntDesign } from "@expo/vector-icons";
 import {
   FadeIn,
   FadeOut,
+  LinearTransition,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
@@ -40,7 +41,11 @@ const CheckBox = ({ label, checked, onPress }: Props) => {
   }, [checked]);
 
   return (
-    <Animated.View style={[styles.container, rnAnimatedContainerStyle]}>
+    <Animated.View
+      style={[styles.container, rnAnimatedContainerStyle]}
+      onTouchEnd={onPress}
+      layout={LinearTransition.springify().mass(0.8)}
+    >
       <Animated.Text style={[styles.label, rnTextStyle]}>{label}</Animated.Text>
       {checked && (
         <Animated.View
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.black,
     borderRadius: 32,
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
   },
   label: {
     fontSize: 14,

@@ -92,16 +92,9 @@ const Page = (props: Props) => {
       {isLoading ? (
         <Loading size={"large"} />
       ) : (
-        // <ActivityIndicator size={"large"} />
-        //<Loading size="large"></Loading>
         <BreakingNews newsList={breakingNews} />
       )}
-      {/* // <BreakingNews newsList={breakingNews} /> */}
       <Catgories onCategoryChanged={onCatChanged} />
-      {/* {breakingNews.map((item, index) => (
-        <Text>{item.title}</Text>
-      ))} */}
-      {/* <NewsList newsList={breakingNews} /> */}
       <NewsList newsList={news} />
     </View>
   );
