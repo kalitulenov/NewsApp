@@ -38,8 +38,8 @@ const BreakingNews = ({ newsList }: Props) => {
           // <FlatList
           ref={ref}
           data={data}
-          //keyExtractor={(_, index) => "list_item${index}"}
-          keyExtractor={(_, index) => String(index)}
+          keyExtractor={(_, index) => "list_item${index}"}
+          // keyExtractor={(_, index) => String(index)}
           renderItem={({ item, index }) => (
             <SliderItem slideItem={item} index={index} scrollX={scrollX} />
           )}
