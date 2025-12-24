@@ -1,22 +1,89 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { Link, Stack } from "expo-router";
+import Loading from "@/components/Loading";
+import { NewsItem } from "@/components/NewsList";
+import { useIsFocused } from "@react-navigation/native";
 
-type Props = {}
+type Props = {};
 
 const Page = (props: Props) => {
-  return (
-    <View style={styles.container}>
-      <Text>Saved Screen</Text>
-    </View>
-  )
-}
+  const [bookmarkNews, setBookmarkNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const isFocused = useIsFocused();
 
-export default Page
+  useEffect(() => {
+    fetchBookmark();
+  }, [isFocused]);
+
+  const fetchBookmark = async () => {
+    await AsyncStorage.getItem("bookmark").then(async (token) => {
+      // const res = JSON.parse(token);
+      const res = token ? JSON.parse(token) : []; // ChatGpt
+      setIsLoading(true);
+      if (res) {
+        console.log("Bookmark", res);
+        let query_string = res.join(",");
+        console.log("query_string", query_string);
+
+        const response = await axios.get(
+          `https://newsdata.io/api/1/latest?apikey=pub_d04c7afa300b4847835de372229e59de&id=${query_string}`
+        );
+        const news = response.data.results;
+        setBookmarkNews(news);
+        setIsLoading(false);
+      } else {
+        setBookmarkNews([]);
+        setIsLoading(false);
+      }
+    });
+  };
+
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+        }}
+      />
+      <View style={styles.container}>
+        {isLoading ? (
+          <Loading size="large" />
+        ) : (
+          <FlatList
+            data={bookmarkNews}
+            keyExtractor={(_, index) => "list_item${index}"}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ index, item }) => {
+              return (
+                <Link href={`/news/${item.article_id}`} asChild key={index}>
+                  <TouchableOpacity>
+                    <NewsItem item={item}></NewsItem>
+                  </TouchableOpacity>
+                </Link>
+                // <Text>{item.title}</Text>
+              );
+            }}
+          />
+        )}
+      </View>
+    </>
+  );
+};
+
+export default Page;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    margin: 20,
   },
-})
+});
