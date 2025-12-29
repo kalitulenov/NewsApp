@@ -1,100 +1,116 @@
+// Импорт необходимых компонентов и модулей
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Header from "@/components/Header";
-import SearchBar from "@/components/SearchBar";
-import axios from "axios";
-import { NewsDataType } from "@/types";
-import BreakingNews from "@/components/BreakingNews";
-import { isLoading } from "expo-font";
-import Catgories from "@/components/Catgories";
-import NewsList from "@/components/NewsList";
-import Loading from "@/components/Loading";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // Для учета безопасных зон экрана
+import Header from "@/components/Header"; // Пользовательский компонент заголовка
+import SearchBar from "@/components/SearchBar"; // Компонент поиска
+import axios from "axios"; // HTTP-клиент для запросов к API
+import { NewsDataType } from "@/types"; // Типы TypeScript для данных новостей
+import BreakingNews from "@/components/BreakingNews"; // Компонент для отображения главных новостей
+import { isLoading } from "expo-font"; // Импорт из expo-font (не используется, возможно опечатка)
+import Catgories from "@/components/Catgories"; // Компонент категорий новостей (опечатка в названии - Categories)
+import NewsList from "@/components/NewsList"; // Компонент списка новостей
+import Loading from "@/components/Loading"; // Компонент индикатора загрузки
 
+// Определение типа пропсов компонента (в данном случае пустой объект)
 type Props = {};
 
+// Основной компонент страницы
 const Page = (props: Props) => {
+  // Получение отступов безопасной зоны (для iPhone X+ и подобных устройств)
   const { top: safeTop } = useSafeAreaInsets();
+
+  // Состояние для хранения главных/срочных новостей
   const [breakingNews, setBreakingNews] = useState<NewsDataType[]>([]);
+
+  // Состояние для хранения обычных новостей (с фильтрацией по категориям)
   const [news, setNews] = useState<NewsDataType[]>([]);
+
+  // Состояние для отслеживания загрузки данных
   const [isLoading, setIsLoading] = useState(true);
 
+  // Хук useEffect для выполнения запросов при монтировании компонента
   useEffect(() => {
-    getBreakingNews();
-    getNews();
-  }, []);
+    getBreakingNews(); // Загрузка главных новостей
+    getNews(); // Загрузка обычных новостей
+  }, []); // Пустой массив зависимостей - выполняется один раз при монтировании
 
-  // useEffect(() => {
-  //   const load = async () => {
-  //     try {
-  //       getBreakingNews();
-  //       getNews();
-  //     } catch (e) {
-  //       console.log(e);
-  //     } finally {
-  //       setIsLoading(false); // ← ОБЯЗАТЕЛЬНО
-  //     }
-  //   };
-  //   load();
-  // }, []);
-
+  // Функция для загрузки главных новостей
   const getBreakingNews = async () => {
     try {
-      // Expo web not replacing process.env variables
-      // const URL =
-      //   "https://newsdata.io/api/1/latest?apikey=${process.env.EXPO_PUBLIC_API_KEY}";
+      // Комментарий: Expo Web не заменяет переменные process.env
+      // const URL = "https://newsdata.io/api/1/latest?apikey=${process.env.EXPO_PUBLIC_API_KEY}";
+
+      // URL для API новостей с жестко заданным API ключом (небезопасно!)
       const URL =
         "https://newsdata.io/api/1/latest?apikey=pub_d04c7afa300b4847835de372229e59de&size=5";
-
-      //  console.log("URL2: ", URL);
+      // size=5 - ограничение на 5 записей для главных новостей
 
       const response = await axios.get(URL);
-      //   console.log("DATA123:", response.data);
 
+      // Проверка на наличие данных в ответе
       if (response && response.data) {
-        setBreakingNews(response.data.results);
+        setBreakingNews(response.data.results); // Сохранение главных новостей в состояние
       }
     } catch (error: any) {
-      console.log("Error message: ", error.message);
+      console.log("Error message: ", error.message); // Логирование ошибок
     }
   };
+
+  // Обработчик изменения категории
   const onCatChanged = (category: string) => {
-    console.log("Category: ", category);
-    setNews([]);
-    getNews(category);
+    console.log("Category: ", category); // Логирование выбранной категории
+    setNews([]); // Очистка текущих новостей перед загрузкой новых
+    getNews(category); // Загрузка новостей для выбранной категории
   };
 
+  // Функция для загрузки обычных новостей
   const getNews = async (category: string = "") => {
     try {
-      let categoryString = "";
+      let categoryString = ""; // Строка параметра категории для URL
+
+      // Если категория указана, добавляем её в параметры запроса
       if (category.length !== 0) {
         categoryString = `&category=${category}`;
       }
-      // console.log("categoryString: ", categoryString);
-      // Expo web not replacing process.env variables
+
+      // Создание URL для запроса с учетом категории
       const URL = `https://newsdata.io/api/1/latest?apikey=pub_d04c7afa300b4847835de372229e59de&size=10${categoryString}`;
-      //    console.log("URL: ", URL);
+      // size=10 - ограничение на 10 записей для обычных новостей
+
       const response = await axios.get(URL);
 
+      // Проверка на наличие данных в ответе
       if (response && response.data) {
-        setNews(response.data.results);
-        setIsLoading(false);
+        setNews(response.data.results); // Сохранение новостей в состояние
+        setIsLoading(false); // Отключение индикатора загрузки
       }
     } catch (error: any) {
-      console.log("Error message: ", error.message);
+      console.log("Error message: ", error.message); // Логирование ошибок
     }
   };
 
+  // Рендер компонента
   return (
+    // Основной контейнер с учетом безопасной зоны
     <View style={[styles.container, { paddingTop: safeTop }]}>
+      {/* Компонент заголовка */}
       <Header />
-      <SearchBar withHorizontalPadding={true} />
+
+      {/* Компонент поиска (передан пустой обработчик) */}
+      <SearchBar withHorizontalPadding={true} setSearchQuery={() => {}} />
+
+      {/* Условный рендеринг: показываем индикатор загрузки или главные новости */}
       {isLoading ? (
-        <Loading size={"large"} />
+        <Loading size={"large"} /> // Компонент загрузки
       ) : (
-        <BreakingNews newsList={breakingNews} />
+        <BreakingNews newsList={breakingNews} /> // Компонент главных новостей
       )}
+
+      {/* Компонент категорий с обработчиком изменения категории */}
       <Catgories onCategoryChanged={onCatChanged} />
+
+      {/* Компонент списка новостей (отображается всегда) */}
       <NewsList newsList={news} />
     </View>
   );
@@ -102,8 +118,9 @@ const Page = (props: Props) => {
 
 export default Page;
 
+// Стили компонента
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // Занимает всё доступное пространство
   },
 });

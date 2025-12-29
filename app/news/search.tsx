@@ -1,3 +1,4 @@
+// Импорт необходимых компонентов React Native и библиотек
 import {
   FlatList,
   StyleSheet,
@@ -6,91 +7,118 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Link, router, Stack, useLocalSearchParams } from "expo-router";
-import { NewsDataType } from "@/types";
-import axios from "axios";
-import { Ionicons } from "@expo/vector-icons";
-import Loading from "@/components/Loading";
-import { NewsItem } from "@/components/NewsList";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router"; // Навигация и параметры URL
+import { NewsDataType } from "@/types"; // Тип данных для новостей
+import axios from "axios"; // HTTP-клиент для запросов к API
+import { Ionicons } from "@expo/vector-icons"; // Иконки для интерфейса
+import Loading from "@/components/Loading"; // Компонент индикатора загрузки
+import { NewsItem } from "@/components/NewsList"; // Компонент отображения одной новости
 
+// Определение типа пропсов (в данном случае пустой)
 type Props = {};
 
+// Основной компонент страницы поиска/фильтрации новостей
 const Page = (props: Props) => {
+  // Получение параметров поиска из URL с использованием useLocalSearchParams
+  // Параметры могут быть переданы при навигации на эту страницу
   const { query, category, country } = useLocalSearchParams<{
-    query: string;
-    category: string;
-    country: string;
+    query: string; // Поисковый запрос (текст для поиска)
+    category: string; // Категория новостей (например: technology, sports)
+    country: string; // Страна (например: us, ru, fr)
   }>();
 
+  // Состояние для хранения списка новостей, полученных по запросу
   const [news, setNews] = useState<NewsDataType[]>([]);
+
+  // Состояние для управления индикатором загрузки
   const [isLoading, setIsLoading] = useState(true);
 
+  // Эффект для загрузки новостей при монтировании компонента
   useEffect(() => {
     getNews();
-  }, []);
+  }, []); // Пустой массив зависимостей - выполняется один раз
 
+  // Основная функция для получения новостей с фильтрацией
   const getNews = async (category: string = "") => {
     try {
-      let categoryString = "";
-      let countryString = "";
-      let queryString = "";
+      // Инициализация строк параметров для URL
+      let categoryString = ""; // Параметр категории
+      let countryString = ""; // Параметр страны
+      let queryString = ""; // Параметр поискового запроса
+
+      // Формирование параметра категории, если он передан
       if (category.length !== 0) {
         categoryString = `&category=${category}`;
       }
+
+      // Формирование параметра страны, если он передан
       if (country.length !== 0) {
         countryString = `&country=${country}`;
       }
+
+      // Формирование параметра поискового запроса, если он передан
       if (query.length !== 0) {
         queryString = `&q=${query}`;
       }
-      // console.log("categoryString: ", categoryString);
-      // Expo web not replacing process.env variables
+
+      // Формирование полного URL для запроса к API новостей
+      // Примечание: API ключ жестко закодирован (небезопасно)
       const URL = `https://newsdata.io/api/1/latest?apikey=pub_d04c7afa300b4847835de372229e59de&size=10${categoryString}${countryString}${queryString}`;
-      //    console.log("URL: ", URL);
+      // size=10 - ограничение на 10 новостей в ответе
+
+      // Выполнение GET-запроса к API
       const response = await axios.get(URL);
 
+      // Проверка успешного ответа от сервера
       if (response && response.data) {
-        setNews(response.data.results);
-        setIsLoading(false);
+        setNews(response.data.results); // Сохранение новостей в состояние
+        setIsLoading(false); // Выключение индикатора загрузки
       }
     } catch (error: any) {
+      // Обработка ошибок при запросе
       console.log("Error message: ", error.message);
     }
   };
 
+  // Рендер компонента
   return (
     <>
+      {/* Конфигурация заголовка навигационного стека */}
       <Stack.Screen
         options={{
+          // Кастомная кнопка "Назад" в заголовке
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={22} />
             </TouchableOpacity>
           ),
-          title: "Search2",
+          title: "Search2", // Заголовок страницы (возможно, должно быть более описательное название)
         }}
       />
-      {/* <View>
-        <Text>Search Query: {query}</Text>
-        <Text>Category: {category}</Text>
-        <Text>Coubtry: {country}</Text>
-      </View> */}
+
+      {/* Основной контейнер страницы */}
       <View style={styles.container}>
+        {/* Условный рендеринг: индикатор загрузки или список новостей */}
         {isLoading ? (
-          <Loading size={"large"} />
+          <Loading size={"large"} /> // Показываем индикатор загрузки
         ) : (
+          // FlatList для эффективного отображения списка новостей
           <FlatList
-            data={news}
-            keyExtractor={(_, index) => "list_item${index}"}
-            showsVerticalScrollIndicator={false}
+            data={news} // Массив данных для отображения
+            keyExtractor={(_, index) => "list_item${index}"} // Генерация уникальных ключей
+            // ВНИМАНИЕ: используется кавычки вместо бэктиков - ошибка шаблонной строки
+            showsVerticalScrollIndicator={false} // Скрываем вертикальный индикатор прокрутки
             renderItem={({ index, item }) => {
+              // Функция рендеринга каждого элемента списка
               return (
+                // Link для навигации на детальную страницу новости
                 <Link href={`/news/${item.article_id}`} asChild key={index}>
+                  {/* TouchableOpacity делает элемент кликабельным */}
                   <TouchableOpacity>
+                    {/* Компонент для отображения отдельной новости */}
                     <NewsItem item={item}></NewsItem>
                   </TouchableOpacity>
                 </Link>
-                // <Text>{item.title}</Text>
               );
             }}
           />
@@ -102,10 +130,11 @@ const Page = (props: Props) => {
 
 export default Page;
 
+// Стили компонента
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginHorizontal: 20,
-    marginVertical: 20,
+    flex: 1, // Занимает все доступное пространство
+    marginHorizontal: 20, // Горизонтальные отступы (левый и правый)
+    marginVertical: 20, // Вертикальные отступы (верхний и нижний)
   },
 });
